@@ -48,17 +48,25 @@ def main():
                 n_epochs=10000,
                 standardize_data=False,
 
+                # number of MC samples for stochatic gradient estimates.
                 n_samples=20,
 
                 # When set to 1, simply a Gaussian predictive distribution.
                 n_flows=1,
+
                 init_sigma_params=init_sigma_params,
                 learn_sigma_weights=True, # set to False for weight noise model
                 lr=1e-2,
-                dataset='toy_small',
+
+                dataset='toy_small', # this is argument is not relevant
+
                 log_base_dir=base_dir,
+
+                # images of posterior posterior samples are generated at
+                # each display step
                 display_freq=1000,
-                init_sigma_obs=3.0,
+
+                init_sigma_obs=3.0, # i.e. of a Gaussian predictive distribution
 
                 # set True to fit the level of observation noise by
                 # minimizing the VFE
@@ -77,9 +85,13 @@ def main():
 
         n_pts_plot = 100
         x_plot = np.linspace(-3,3,n_pts_plot)
+
+        # the mean of the predictive distribution
         y_plot = net.flows[0].project(x_plot[None]*0.)
+
+        # This is how we plot at 95% confidence interval
         y_plot_sd2p = net.flows[0].project(2.*np.ones(x_plot.shape))
-        y_plot_sd2m = net.flows[0].project(2.*-np.ones(x_plot.shape))
+        y_plot_sd2m = net.flows[0].project(-2.*np.ones(x_plot.shape))
         with tf.Session() as sess:
             tf.global_variables_initializer().run()
 
@@ -88,8 +100,6 @@ def main():
             sample_y_val = sess.run([sample_y],
                     feed_dict={net.x:sample_x[:,None],
                         })[0][0]
-            print "sample_x.shape", sample_x.shape
-            print "sample_y_val.shape", sample_y_val.shape
             net.split(0, sample_x[:, None], sample_y_val[:, None])
 
             # Plot state before training
@@ -100,12 +110,17 @@ def main():
             plt.plot(x_plot, y_plot_val[0],'g-', x_plot, y_plot_sd2m_val[0],'g--',
                     x_plot, y_plot_sd2p_val[0],'g--')
             plt.title("sample %d before training (data and predictive "
-                    "distribution)"%i)
+                    "distribution +- 2SD)"%i)
             plt.savefig(base_dir+args.log_fn+"_npts_%03d_pretraining_12-24.png"%n_pts)
 
             # Plot state after training
             net.summary_path = base_dir+args.log_fn+"_npts_%03d"%n_pts
+
+            # By passing in the session, we avoid reinitializing weights;
+            # thus the means of the variational distribution begin at the
+            # true weights (i.e. those used to generate the data)
             net.train(sess)
+
             # plot 5 samples from the posterior
             plt.clf()
             plt.scatter(net.X_train, net.Y_train, c='k',s=50)
@@ -117,16 +132,7 @@ def main():
             plt.savefig(base_dir+args.log_fn+"_npts_%03d_posttraining_12-24.png"%n_pts)
             n_unpruned = utils.plot_pruning2(net,
                     base_dir+args.log_fn+"_npts_%03d"%n_pts)
-            print "N units not pruned: %d/%d"%(n_unpruned, 50)
-
-            #net.train(sess)
-            #plt.clf()
-            #plt.scatter(sample_x, sample_y_val[0],c='k',s=3,marker='*')
-            #for _ in range(5):
-            #    y_plot_val = sess.run([y_plot], feed_dict={net.x:x_plot})[0]
-            #    plt.plot(x_plot, y_plot_val[0],c='g')
-            #plt.title("sample %d post training 2"%i)
-            #plt.savefig("./func_sample_%d_posttraining2.png"%i)
+            print "N units not pruned: %d/%d\n\n"%(n_unpruned, 50)
 
 if __name__ == "__main__":
     main()
