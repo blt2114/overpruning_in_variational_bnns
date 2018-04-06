@@ -18,7 +18,7 @@ class flow_network_bayes(network.model_base):
             init_sigma_params=1e-5, bayes_layers=None, noise_mag=1.0, init_sigma_obs=1.0, lmbda=.5,
             length_scale=1., learn_ls=False,  learn_lmbda=False, inference='VI',
             w_prior_sigma=None, anneal_in_KL=False, nonlinearity='tanh',
-            learn_sigma_weights=True, learn_beta_std=False, beta=1., C=None,
+            learn_sigma_weights=True, learn_beta_std=False,
             learn_sigma_obs=True,  **kwargs):
         """initialize a network with normalizing flows.
 
@@ -46,9 +46,6 @@ class flow_network_bayes(network.model_base):
             learn_beta_std: set true to learn beta_std
             learn_sigma_weights: set to False to use weight noise.
             inference: inference method to use, must be VI, MAP, or MLE
-            beta: the norm of the KLs (as per Cuong's idea), 1 is the normal
-                variational objective.
-            C: constant to multiply the KL penalty by (use M^(1-beta) if None)
         """
         self.noise_mag = noise_mag
         self.learn_sigma_obs = learn_sigma_obs
