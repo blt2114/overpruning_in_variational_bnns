@@ -1,0 +1,14 @@
+{
+    "language"        : "PYTHON",
+    "main-file"       : "network_tester.py",
+    "experiment-name" : "vi_compare_bh_meanfield",
+    "likelihood"      : "GAUSSIAN",
+    "variables" : {
+        "w_prior_sigma" : {
+            "type" : "FLOAT",
+            "size" : 1,
+            "min"  : 0.01,
+            "max"  : 10.0
+        }
+    }
+}

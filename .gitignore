@@ -93,6 +93,5 @@ ENV/
 
 *.out
 samples_from_prior/*
-bayes_opt/*
 *.png
 *.gif
