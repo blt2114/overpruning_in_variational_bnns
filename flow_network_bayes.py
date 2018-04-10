@@ -112,8 +112,6 @@ class flow_network_bayes(network.model_base):
         if learn_lmbda: self.all_params.append(self.log_lmbda)
         if learn_beta_std: self.all_params.append(self.beta_std)
 
-        iteration_after_switch = tf.cast(tf.abs(self.epoch-self.epoch_switch_opt)+
-            (self.epoch-self.epoch_switch_opt), tf.float32)
         if anneal_in_KL:
             assert inference != 'MLE'
             KL_weight =  1. - tf.exp(-0.03*(tf.cast(tf.abs(self.epoch-self.epoch_switch_opt)+

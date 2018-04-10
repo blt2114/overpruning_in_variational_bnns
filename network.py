@@ -36,7 +36,8 @@ class model_base:
             log_base_dir: the directory in which to store logs.
             batch_size: set very high by default as to have only 1 batch
             epoch_switch_opt: the epoch at which to transition to training
-                all parameters.
+                all parameters (e.g. variational hyperparameters) or to
+                begin annealing in the KL for VI).
             n_pts: numbere of points generate if synthetic data
             plot_pts: if datapoint are to be plotted on predictive
                 distribution plot
